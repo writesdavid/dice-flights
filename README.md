@@ -10,12 +10,28 @@ The winner changes. No airline is consistently good. That's the point.
 
 ---
 
+## Why I built this
+
+I'm David Hamilton. I work in content design and I'm learning to build.
+
+I got tired of booking flights based on price and vibes. Every airline claims to be reliable. None of them are consistently. The data exists — the US government publishes it — but nobody surfaces it in a way that's honest or useful.
+
+So I built this. No affiliate links. No sponsored rankings. Just the numbers.
+
+It's also a learning project. I'm transitioning from content design into engineering and AI infrastructure. Building things in public is how I'm doing it.
+
+More at [writesdavid.substack.com](https://writesdavid.substack.com).
+
+---
+
 ## What it does
 
-Scores 8 US carriers on predicted reliability using two signals:
+Scores 8 US carriers on predicted reliability using four signals:
 
-- **DOT on-time performance** (65%) — 10 months of official government data from the Bureau of Transportation Statistics, bundled in the repo. Tracks on-time rate, cancellation rate, and whether each airline is improving or declining.
-- **News sentiment** (35%) — live headlines from Google News, scored for negative signals (cancellations, delays, incidents) vs positive. Refreshed every 2 hours.
+- **Track record** (50%) — DOT Bureau of Transportation Statistics data: on-time rate, cancellation rate, baggage mishandling, complaint rate, and trend direction over 10 months.
+- **Right now** (15%) — FAA NAS Status: live ground delays and ground stops at each airline's hub airports.
+- **This week** (15%) — Open-Meteo weather forecast at each airline's primary hub. If a storm is coming, the score reflects it.
+- **In the news** (20%) — Google News headlines scored for negative signals (cancellations, delays, incidents) vs positive. Refreshed every 2 hours.
 
 No API keys. No accounts. No third-party services.
 
@@ -45,9 +61,7 @@ Open `http://localhost:3000` and roll.
 1. Fork this repo
 2. Sign up at [render.com](https://render.com)
 3. New → Web Service → connect your fork
-4. Set:
-   - Build command: `npm install`
-   - Start command: `node server.js`
+4. Build command: `npm install` · Start command: `node server.js`
 5. Deploy — no env vars needed
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
@@ -76,6 +90,8 @@ If BTS blocks the automated download (they require a browser session), the scrip
 ## Stack
 
 - Node.js + Express
-- DOT/BTS on-time data (bundled JSON, updated quarterly)
+- DOT/BTS on-time, baggage, and complaint data (bundled JSON, updated quarterly)
+- FAA NAS Status API (no key)
+- Open-Meteo weather forecast API (no key)
 - Google News RSS (no key)
 - Vanilla JS, no framework, no build step
