@@ -384,7 +384,6 @@
     This week (15%): Open-Meteo forecast &middot;
     In the news (20%): Google News<br>
     No API keys. No ads. No affiliates.
-    Data period: <span id="bts-period">Jan–Oct 2024</span>.
     <span id="last-updated"></span>
   </footer>
 
@@ -603,7 +602,7 @@
       data.airlines.forEach((a, i) => resultsEl.appendChild(renderCard(a, i)));
       resultsEl.classList.add('visible');
 
-      if (data.btsPeriod) document.getElementById('bts-period').textContent = data.btsPeriod;
+      // btsPeriod available if needed for debugging: data.btsPeriod
       if (data.lastFetched) {
         document.getElementById('last-updated').textContent =
           `Signals refreshed: ${new Date(data.lastFetched).toLocaleString()}.`;
