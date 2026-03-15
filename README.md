@@ -35,7 +35,7 @@ Scores 8 US carriers on predicted reliability using four signals:
 
 No API keys. No accounts. No third-party services.
 
-**Airlines tracked:** Delta, United, American, Southwest, Alaska, JetBlue, Spirit, Frontier
+**Airlines tracked:** Delta, United, American, Southwest, Alaska, JetBlue, Allegiant, Frontier
 
 ---
 

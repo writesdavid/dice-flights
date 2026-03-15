@@ -367,7 +367,7 @@
   <footer>
     Track record (50%) · FAA delays (15%) · Hub weather (15%) · News (20%)<br>
     This is what the most-traveled person you know would tell you before you booked. No ads. No opinion. Just the data.<br>
-    No affiliates. <span id="last-updated"></span><br>
+    No affiliates. <span id="last-updated"></span> <span id="bts-period"></span><br>
     Built by <a href="https://github.com/writesdavid/dice-flights" target="_blank" rel="noopener">David Hamilton</a> · <a href="https://writesdavid.substack.com" target="_blank" rel="noopener">writesdavid.substack.com</a>
   </footer>
 
@@ -583,6 +583,10 @@
       if (data.lastFetched) {
         document.getElementById('last-updated').textContent =
           `Updated ${new Date(data.lastFetched).toLocaleTimeString()}.`;
+      }
+      if (data.btsPeriod) {
+        document.getElementById('bts-period').textContent =
+          `Track record data: ${data.btsPeriod}.`;
       }
 
       btn.disabled = false;

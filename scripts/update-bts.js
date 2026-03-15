@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 
 const OUTPUT = path.join(__dirname, '../data/bts_stats.json');
-const TARGET = ['DL', 'UA', 'AA', 'WN', 'AS', 'B6', 'NK', 'F9'];
+const TARGET = ['DL', 'UA', 'AA', 'WN', 'AS', 'B6', 'G4', 'F9'];
 
 function getMonthsToFetch(n = 6) {
   const months = [];
