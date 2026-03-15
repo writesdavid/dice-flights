@@ -22,9 +22,22 @@ const ALL_HUBS = {
 let nasCache = { data: null, fetchedAt: 0 };
 const NAS_TTL = 10 * 60 * 1000;
 
+// Parse a duration string like "3 hours and 36 minutes", "24 hours", "46 minutes" into minutes
+function parseDurationMinutes(str) {
+  if (!str) return null;
+  const s = str.trim();
+  let total = 0;
+  const hours = s.match(/(\d+)\s*hour/);
+  const mins  = s.match(/(\d+)\s*min/);
+  if (hours) total += parseInt(hours[1]) * 60;
+  if (mins)  total += parseInt(mins[1]);
+  return total > 0 ? total : null;
+}
+
 function parseNasXml(xml) {
   const airports = {};
 
+  // Ground Stop Programs — full stop, worst possible
   const gsBlock = xml.match(/<Ground_Stop_List>([\s\S]*?)<\/Ground_Stop_List>/);
   if (gsBlock) {
     for (const m of gsBlock[1].matchAll(/<ARPT>(\w+)<\/ARPT>/g)) {
@@ -32,14 +45,37 @@ function parseNasXml(xml) {
     }
   }
 
+  // Ground Delay Programs — average delay reported in hours + minutes
+  const gdBlock = xml.match(/<Ground_Delay_List>([\s\S]*?)<\/Ground_Delay_List>/);
+  if (gdBlock) {
+    for (const entry of gdBlock[1].matchAll(/<Ground_Delay>([\s\S]*?)<\/Ground_Delay>/g)) {
+      const arpt = entry[1].match(/<ARPT>(\w+)<\/ARPT>/)?.[1];
+      // Use <Max> first; fall back to <Avg>
+      const maxStr = entry[1].match(/<Max>([\s\S]*?)<\/Max>/)?.[1];
+      const avgStr = entry[1].match(/<Avg>([\s\S]*?)<\/Avg>/)?.[1];
+      const delay  = parseDurationMinutes(maxStr) || parseDurationMinutes(avgStr) || 60;
+      if (!arpt) continue;
+      // Don't overwrite a ground stop
+      if (!airports[arpt]) {
+        airports[arpt] = { groundStop: false, maxDelay: delay };
+      } else if (!airports[arpt].groundStop && airports[arpt].maxDelay < delay) {
+        airports[arpt].maxDelay = delay;
+      }
+    }
+  }
+
+  // General Arrival/Departure Delay Info — delay in "X hours and Y minutes" or "Z minutes"
   const delayBlock = xml.match(/<Arrival_Departure_Delay_List>([\s\S]*?)<\/Arrival_Departure_Delay_List>/);
   if (delayBlock) {
     for (const entry of delayBlock[1].matchAll(/<Delay>([\s\S]*?)<\/Delay>/g)) {
       const arpt = entry[1].match(/<ARPT>(\w+)<\/ARPT>/)?.[1];
-      const max  = parseInt(entry[1].match(/<Max>(\d+)\s*minutes<\/Max>/)?.[1]) || 30;
+      const maxStr = entry[1].match(/<Max>([\s\S]*?)<\/Max>/)?.[1];
+      const delay  = parseDurationMinutes(maxStr) || 30;
       if (!arpt) continue;
-      if (!airports[arpt] || airports[arpt].maxDelay < max) {
-        airports[arpt] = { groundStop: false, maxDelay: max };
+      if (!airports[arpt]) {
+        airports[arpt] = { groundStop: false, maxDelay: delay };
+      } else if (!airports[arpt].groundStop && airports[arpt].maxDelay < delay) {
+        airports[arpt].maxDelay = delay;
       }
     }
   }

@@ -14,23 +14,29 @@ const HUB_COORDS = {
 
 // WMO weather interpretation codes → impact score (100 = no impact)
 function wmoScore(code) {
-  if (code <= 3)  return 100; // clear to overcast
-  if (code <= 48) return 60;  // fog
-  if (code <= 55) return 75;  // drizzle
-  if (code <= 63) return 65;  // light-moderate rain
-  if (code === 65) return 48; // heavy rain
-  if (code <= 73) return 42;  // light-moderate snow
-  if (code <= 77) return 22;  // heavy snow / snow grains
+  if (code <= 3)  return 100; // clear / partly cloudy / overcast
+  if (code <= 19) return 88;  // mist, dust, haze — minor visibility impact
+  if (code <= 29) return 78;  // patchy fog, ice crystals, etc.
+  if (code <= 39) return 70;  // dust/sand storms, drifting snow
+  if (code <= 48) return 55;  // fog / depositing rime fog
+  if (code <= 55) return 75;  // drizzle (light to dense)
+  if (code <= 63) return 65;  // light to moderate rain
+  if (code === 65) return 45; // heavy rain
+  if (code <= 73) return 42;  // light to moderate snow
+  if (code <= 77) return 20;  // heavy snow / snow grains
   if (code <= 82) return 62;  // rain showers
-  if (code <= 86) return 35;  // snow showers
-  if (code === 95) return 28; // thunderstorm
-  return 18;                  // severe storms
+  if (code <= 86) return 33;  // snow showers
+  if (code === 95) return 25; // thunderstorm
+  return 15;                  // severe thunderstorms with hail
 }
 
 function wmoLabel(code) {
   if (code === 0)  return 'Clear';
   if (code <= 2)   return 'Mostly clear';
   if (code === 3)  return 'Overcast';
+  if (code <= 19)  return 'Mist/haze';
+  if (code <= 29)  return 'Patchy fog';
+  if (code <= 39)  return 'Drifting snow/dust';
   if (code <= 48)  return 'Fog';
   if (code <= 55)  return 'Drizzle';
   if (code <= 63)  return 'Rain';
@@ -48,12 +54,13 @@ async function getWeatherScore(iata) {
   if (!loc) return { score: null, detail: 'No hub data' };
 
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weathercode,precipitation_sum&timezone=${encodeURIComponent(loc.tz)}&forecast_days=4`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weather_code,precipitation_sum&timezone=${encodeURIComponent(loc.tz)}&forecast_days=4`;
     const res = await fetch(url, { timeout: 8000 });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const json = await res.json();
-    const codes = json.daily?.weathercode || [];
+    // Open-Meteo renamed weathercode → weather_code; support both for safety
+    const codes = json.daily?.weather_code || json.daily?.weathercode || [];
     const precip = json.daily?.precipitation_sum || [];
 
     // Indices: 0=today, 1=tomorrow, 2=day after, 3=day 3

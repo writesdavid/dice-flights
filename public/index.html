@@ -4,9 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dice Flights — Which airline will actually deliver?</title>
+  <meta name="description" content="Real-time airline reliability rankings using DOT track records, FAA live delays, hub weather, and news sentiment. No ads, no opinions — just the data." />
   <meta name="author" content="David Hamilton" />
   <meta property="og:title" content="Dice Flights" />
   <meta property="og:description" content="Loyalty to your family. Not your airline." />
+  <meta name="twitter:card" content="summary" />
   <meta name="twitter:creator" content="@writesdavid" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -321,10 +323,10 @@
       top: 5px;
       left: 0; right: 0;
       text-align: center;
-      font-size: 0.52rem;
+      font-size: 0.56rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.45);
       pointer-events: none;
       white-space: nowrap;
       overflow: hidden;
@@ -338,6 +340,17 @@
       color: var(--muted);
       font-size: 0.72rem;
       line-height: 1.8;
+    }
+
+    /* ── Mobile tweaks ──────────────────────────────────────────────── */
+    @media (max-width: 420px) {
+      .card-top { padding: 0.75rem 0.9rem; gap: 0.65rem; }
+      .card-score { font-size: 1.7rem; }
+      .rank-num { font-size: 1.3rem; }
+      .airline-name { font-size: 0.9rem; }
+      .key-stats { font-size: 0.65rem; }
+      h1 { font-size: 2.2rem; }
+      #roll-btn { padding: 0.75rem 2rem; }
     }
   </style>
 </head>
@@ -366,8 +379,8 @@
 
   <footer>
     Track record (50%) · FAA delays (15%) · Hub weather (15%) · News (20%)<br>
-    This is what the most-traveled person you know would tell you before you booked. No ads. No opinion. Just the data.<br>
-    No affiliates. <span id="last-updated"></span> <span id="bts-period"></span><br>
+    This is what the most-traveled person you know would tell you before you booked. No opinion. Just the data.<br>
+    No affiliates. <span id="last-updated"></span><span id="bts-period"></span><br>
     Built by <a href="https://github.com/writesdavid/dice-flights" target="_blank" rel="noopener">David Hamilton</a> · <a href="https://writesdavid.substack.com" target="_blank" rel="noopener">writesdavid.substack.com</a>
   </footer>
 
@@ -572,6 +585,7 @@
       data.airlines.forEach((a, i) => resultsEl.appendChild(renderCard(a, i)));
       resultsEl.classList.add('visible');
       shareEl.classList.add('visible');
+      btn.textContent = 'Roll again';
 
       // Animate signal bar fills after paint
       requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -582,11 +596,11 @@
 
       if (data.lastFetched) {
         document.getElementById('last-updated').textContent =
-          `Updated ${new Date(data.lastFetched).toLocaleTimeString()}.`;
+          `Updated ${new Date(data.lastFetched).toLocaleTimeString()}. `;
       }
       if (data.btsPeriod) {
         document.getElementById('bts-period').textContent =
-          `Track record data: ${data.btsPeriod}.`;
+          `Track record: ${data.btsPeriod}.`;
       }
 
       btn.disabled = false;

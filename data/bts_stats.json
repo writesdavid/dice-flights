@@ -38,6 +38,11 @@
       "baggagePer100": 5.0,
       "complaintsPer100k": 9.5,
       "carrierCancelPct": 2.0
+    },
+    "G4": {
+      "baggagePer100": 6.8,
+      "complaintsPer100k": 11.2,
+      "carrierCancelPct": 3.1
     }
   },
   "carriers": {
@@ -144,6 +149,21 @@
         { "year": 2024, "month": 8,  "onTimePct": 74.1, "cancelPct": 3.2 },
         { "year": 2024, "month": 9,  "onTimePct": 76.8, "cancelPct": 2.9 },
         { "year": 2024, "month": 10, "onTimePct": 76.2, "cancelPct": 3.0 }
+      ]
+    },
+    "G4": {
+      "name": "Allegiant",
+      "monthly": [
+        { "year": 2024, "month": 1,  "onTimePct": 69.8, "cancelPct": 4.1 },
+        { "year": 2024, "month": 2,  "onTimePct": 72.4, "cancelPct": 3.8 },
+        { "year": 2024, "month": 3,  "onTimePct": 70.1, "cancelPct": 4.3 },
+        { "year": 2024, "month": 4,  "onTimePct": 68.5, "cancelPct": 4.5 },
+        { "year": 2024, "month": 5,  "onTimePct": 71.2, "cancelPct": 4.0 },
+        { "year": 2024, "month": 6,  "onTimePct": 65.9, "cancelPct": 4.8 },
+        { "year": 2024, "month": 7,  "onTimePct": 70.3, "cancelPct": 4.2 },
+        { "year": 2024, "month": 8,  "onTimePct": 71.5, "cancelPct": 3.9 },
+        { "year": 2024, "month": 9,  "onTimePct": 73.8, "cancelPct": 3.6 },
+        { "year": 2024, "month": 10, "onTimePct": 72.9, "cancelPct": 3.7 }
       ]
     }
   }

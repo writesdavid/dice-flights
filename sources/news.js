@@ -28,6 +28,7 @@ async function getNewsScore(airlineName) {
 
     const res = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
+      timeout: 10000,
     });
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -49,7 +50,10 @@ async function getNewsScore(airlineName) {
     }
 
     const total = pos + neg;
-    const score = total === 0 ? 72 : Math.round((pos / total) * 100);
+    // Neutral coverage (no keyword matches) → 72 baseline
+    // All-negative → floor at 15 so it doesn't dominate the composite score
+    const raw = total === 0 ? 72 : Math.round((pos / total) * 100);
+    const score = Math.max(15, raw);
     const detail = `${titles.length} articles · ${neg} negative`;
 
     return { score, detail };
