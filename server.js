@@ -21,6 +21,21 @@ const AIRLINES = [
 
 const cache = { data: null, lastFetched: null };
 
+function getDelayMins(flight) {
+  // Use departure.delay if available (paid tier)
+  if (flight.departure && flight.departure.delay != null) {
+    return flight.departure.delay;
+  }
+  // Fall back to calculating from scheduled vs actual/estimated
+  const dep = flight.departure;
+  if (!dep) return 0;
+  const actual = dep.actual || dep.estimated;
+  const scheduled = dep.scheduled;
+  if (!actual || !scheduled) return 0;
+  const diff = (new Date(actual) - new Date(scheduled)) / 60000;
+  return Math.max(0, diff);
+}
+
 async function fetchAirlineStats(airline) {
   const url = `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&airline_iata=${airline.iata}&flight_status=active&limit=100`;
   let flights = [];
@@ -28,9 +43,13 @@ async function fetchAirlineStats(airline) {
   try {
     const res = await fetch(url);
     const json = await res.json();
+    if (json.error) {
+      console.error(`API error for ${airline.iata}:`, JSON.stringify(json.error));
+    }
     if (json.data && Array.isArray(json.data)) {
       flights = json.data;
     }
+    console.log(`${airline.iata}: ${flights.length} flights, sample delay field:`, flights[0]?.departure?.delay);
   } catch (err) {
     console.error(`Failed to fetch ${airline.iata}:`, err.message);
   }
@@ -41,21 +60,14 @@ async function fetchAirlineStats(airline) {
     return { ...airline, total: 0, delayed: 0, on_time_pct: null, avg_delay_mins: null, score: null };
   }
 
-  const delayedFlights = flights.filter(f => {
-    const delay = f.departure && f.departure.delay != null ? f.departure.delay : 0;
-    return delay > 15;
-  });
+  const delayMins = flights.map(getDelayMins);
+  const delayedFlights = delayMins.filter(d => d > 15);
 
   const delayed = delayedFlights.length;
   const on_time_pct = ((total - delayed) / total) * 100;
-
-  const totalDelayMins = delayedFlights.reduce((sum, f) => {
-    return sum + (f.departure && f.departure.delay != null ? f.departure.delay : 0);
-  }, 0);
-  const avg_delay_mins = delayed > 0 ? totalDelayMins / delayed : 0;
+  const avg_delay_mins = delayed > 0 ? delayedFlights.reduce((s, d) => s + d, 0) / delayed : 0;
 
   // Score: on-time % weighted 70%, delay penalty weighted 30%
-  // avg_delay_mins capped at 120 for normalization
   const delayFactor = Math.max(0, 1 - avg_delay_mins / 120);
   const score = on_time_pct * 0.7 + delayFactor * 30;
 
@@ -88,14 +100,14 @@ fetchAllAirlines();
 // Refresh every 12 hours
 setInterval(fetchAllAirlines, CACHE_TTL_MS);
 
-app.use(express.static(path.join(__dirname, 'public')));
-
 app.get('/api/airlines', (req, res) => {
   if (!cache.data) {
     return res.status(503).json({ error: 'Data not yet available. Try again shortly.' });
   }
   res.json({ airlines: cache.data, lastFetched: cache.lastFetched });
 });
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {
   console.log(`Dice Flights running at http://localhost:${PORT}`);
