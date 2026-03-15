@@ -33,10 +33,26 @@
       align-items: center;
     }
 
+    /* ── Hero (centers vertically before first roll) ─────────────────── */
+    #hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      width: 100%;
+      justify-content: center;
+      padding-bottom: 4rem;
+      transition: flex 0.5s ease;
+    }
+    #hero.settled {
+      flex: 0;
+      padding-bottom: 0;
+    }
+
     /* ── Header ─────────────────────────────────────────────────────── */
     header {
       text-align: center;
-      padding: 3rem 1.5rem 0.5rem;
+      padding: 0 1.5rem 0.5rem;
       max-width: 560px;
     }
 
@@ -64,7 +80,7 @@
       flex-direction: column;
       align-items: center;
       gap: 1.25rem;
-      padding: 2.25rem 1rem 1.5rem;
+      padding: 2rem 1rem 1.25rem;
     }
 
     #dice {
@@ -104,7 +120,46 @@
     #roll-btn:active  { transform: scale(0.97); }
     #roll-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 
-    #status { color: var(--muted); font-size: 0.875rem; min-height: 1.2em; }
+    /* ── Loading state ───────────────────────────────────────────────── */
+    #loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0 0.25rem;
+    }
+    #loading.visible { display: flex; }
+
+    .loading-phrase {
+      font-size: 0.85rem;
+      color: var(--muted);
+      min-height: 1.3em;
+      animation: phraseFade 0.4s ease;
+    }
+    @keyframes phraseFade {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .loading-dots {
+      display: flex;
+      gap: 5px;
+    }
+    .loading-dots span {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: dotPulse 1.2s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotPulse {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+      40%            { transform: scale(1);   opacity: 1; }
+    }
+
+    #status { color: var(--red); font-size: 0.875rem; min-height: 1.2em; text-align: center; }
 
     /* ── Summary bar chart ──────────────────────────────────────────── */
     #summary {
@@ -361,18 +416,24 @@
 </head>
 <body>
 
-  <header>
-    <h1>Roll the dice.</h1>
-    <p class="tagline">
-      Because the only loyalty we have is to our families, not an airline.<br>
-      <strong>Eight carriers. Four signals. One honest ranking.</strong>
-    </p>
-  </header>
+  <div id="hero">
+    <header>
+      <h1>Roll the dice.</h1>
+      <p class="tagline">
+        Because the only loyalty we have is to our families, not an airline.<br>
+        <strong>Eight carriers. Four signals. One honest ranking.</strong>
+      </p>
+    </header>
 
-  <div class="roll-area">
-    <div id="dice">&#9861;</div>
-    <button id="roll-btn">Roll</button>
-    <div id="status"></div>
+    <div class="roll-area">
+      <div id="dice">&#9861;</div>
+      <button id="roll-btn">Roll</button>
+      <div id="loading">
+        <div class="loading-phrase" id="loading-phrase"></div>
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+      </div>
+      <div id="status"></div>
+    </div>
   </div>
 
   <div id="summary"></div>
@@ -389,11 +450,25 @@
 
   <script>
     const DICE_FACES = ['&#9856;','&#9857;','&#9858;','&#9859;','&#9860;','&#9861;'];
-    const diceEl   = document.getElementById('dice');
-    const btn      = document.getElementById('roll-btn');
-    const statusEl = document.getElementById('status');
-    const summaryEl = document.getElementById('summary');
-    const resultsEl = document.getElementById('results');
+    const LOADING_PHRASES = [
+      'Checking the skies...',
+      'Reading the news...',
+      'Asking the FAA...',
+      'Counting lost bags...',
+      'Scanning hub delays...',
+      'Crunching the numbers...',
+      'Checking complaint records...',
+      'Looking at the forecast...',
+    ];
+
+    const diceEl      = document.getElementById('dice');
+    const btn         = document.getElementById('roll-btn');
+    const statusEl    = document.getElementById('status');
+    const summaryEl   = document.getElementById('summary');
+    const resultsEl   = document.getElementById('results');
+    const heroEl      = document.getElementById('hero');
+    const loadingEl   = document.getElementById('loading');
+    const phraseEl    = document.getElementById('loading-phrase');
 
     // ── Helpers ──────────────────────────────────────────────────────
     function cls(v) {
@@ -565,6 +640,18 @@
       void diceEl.offsetWidth;
       diceEl.classList.add('rolling');
 
+      // Cycle loading phrases
+      let phraseIdx = 0;
+      phraseEl.textContent = LOADING_PHRASES[phraseIdx];
+      loadingEl.classList.add('visible');
+      const phraseInterval = setInterval(() => {
+        phraseIdx = (phraseIdx + 1) % LOADING_PHRASES.length;
+        phraseEl.style.animation = 'none';
+        void phraseEl.offsetWidth;
+        phraseEl.style.animation = '';
+        phraseEl.textContent = LOADING_PHRASES[phraseIdx];
+      }, 900);
+
       const shuffle = setInterval(() => {
         diceEl.innerHTML = DICE_FACES[Math.floor(Math.random() * DICE_FACES.length)];
       }, 100);
@@ -573,7 +660,8 @@
       try {
         const res = await fetch('/api/airlines');
         if (res.status === 503) {
-          clearInterval(shuffle);
+          clearInterval(shuffle); clearInterval(phraseInterval);
+          loadingEl.classList.remove('visible');
           diceEl.classList.remove('rolling');
           statusEl.textContent = 'Loading data — try again in a moment.';
           btn.disabled = false;
@@ -582,7 +670,8 @@
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         data = await res.json();
       } catch (e) {
-        clearInterval(shuffle);
+        clearInterval(shuffle); clearInterval(phraseInterval);
+        loadingEl.classList.remove('visible');
         diceEl.classList.remove('rolling');
         statusEl.textContent = 'Could not reach server.';
         btn.disabled = false;
@@ -590,10 +679,12 @@
       }
 
       await new Promise(r => setTimeout(r, 1200));
-      clearInterval(shuffle);
+      clearInterval(shuffle); clearInterval(phraseInterval);
+      loadingEl.classList.remove('visible');
       diceEl.classList.remove('rolling');
       diceEl.innerHTML = DICE_FACES[Math.floor(Math.random() * DICE_FACES.length)];
 
+      heroEl.classList.add('settled');
       summaryEl.innerHTML = '';
       summaryEl.classList.remove('visible');
       resultsEl.innerHTML = '';
@@ -602,7 +693,6 @@
       data.airlines.forEach((a, i) => resultsEl.appendChild(renderCard(a, i)));
       resultsEl.classList.add('visible');
 
-      // btsPeriod available if needed for debugging: data.btsPeriod
       if (data.lastFetched) {
         document.getElementById('last-updated').textContent =
           `Signals refreshed: ${new Date(data.lastFetched).toLocaleString()}.`;
