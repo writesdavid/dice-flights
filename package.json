@@ -1,0 +1,14 @@
+{
+  "name": "dice-flights",
+  "version": "1.0.0",
+  "description": "Roll the dice — see which US airline is actually safe right now",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.18.0",
+    "node-fetch": "^2.7.0"
+  }
+}
