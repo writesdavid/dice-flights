@@ -9,6 +9,7 @@ const { computeScore } = require('./scorer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const CACHE_TTL_MS = 2 * 60 * 60 * 1000;
 
 const AIRLINES = [
   { name: 'Delta',     iata: 'DL' },
@@ -25,7 +26,7 @@ const btsData = loadBtsData();
 if (btsData) console.log(`BTS data loaded: ${btsData.period}`);
 else console.warn('No BTS data — scores will rely on live signals only');
 
-const cache = { data: null, lastFetched: null };
+const cache = { data: null, lastFetched: null, refreshing: false };
 
 async function buildRankings() {
   const [faaResults, weatherResults, newsResults] = await Promise.all([
@@ -54,27 +55,45 @@ async function buildRankings() {
 }
 
 async function refresh() {
+  if (cache.refreshing) return;
+  cache.refreshing = true;
   console.log('Refreshing signals...');
   try {
     cache.data = await buildRankings();
     cache.lastFetched = new Date().toISOString();
-    console.log(`Done. Rankings:`);
-    cache.data.forEach(a =>
-      console.log(`  ${a.rank}. ${a.name}: ${a.score ?? '—'} (BTS:${a.signals.bts.score ?? '—'} FAA:${a.signals.faa.score ?? '—'} Wx:${a.signals.weather.score ?? '—'} News:${a.signals.news.score ?? '—'})`)
-    );
+    console.log('Done:', cache.data.map(a => `${a.rank}.${a.name}:${a.score}`).join(' '));
   } catch (e) {
     console.error('Refresh error:', e.message);
+  } finally {
+    cache.refreshing = false;
   }
 }
 
-refresh();
-setInterval(refresh, 2 * 60 * 60 * 1000);
+function isCacheStale() {
+  if (!cache.lastFetched) return true;
+  return Date.now() - new Date(cache.lastFetched).getTime() > CACHE_TTL_MS;
+}
 
-app.get('/api/airlines', (req, res) => {
+// Eager refresh on traditional servers; lazy on serverless (no persistent process)
+if (!process.env.VERCEL) {
+  refresh();
+  setInterval(refresh, CACHE_TTL_MS);
+}
+
+app.get('/api/airlines', async (req, res) => {
+  // On Vercel (or stale cache): fetch on demand
+  if (!cache.data || isCacheStale()) {
+    await refresh();
+  }
   if (!cache.data) return res.status(503).json({ error: 'Loading — try again in a moment.' });
   res.json({ airlines: cache.data, lastFetched: cache.lastFetched, btsPeriod: btsData?.period });
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.listen(PORT, () => console.log(`Dice Flights running at http://localhost:${PORT}`));
+// Required for Vercel — export the app instead of just calling listen
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`Dice Flights running at http://localhost:${PORT}`));
+}
+
+module.exports = app;
