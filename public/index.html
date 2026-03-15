@@ -141,6 +141,15 @@
     #summary { display: none; width: 100%; max-width: 640px; padding: 0 1rem 0.75rem; }
     #summary.visible { display: block; }
 
+    .summary-title {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.55rem;
+    }
+
     .summary-row {
       display: flex;
       align-items: center;
@@ -182,6 +191,23 @@
       gap: 0.55rem;
     }
     #results.visible { display: flex; }
+
+    /* ── Share prompt ───────────────────────────────────────────────── */
+    #share-prompt {
+      display: none;
+      text-align: center;
+      padding: 0.25rem 1rem 1.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    #share-prompt.visible { display: block; }
+    #share-prompt a {
+      color: var(--muted);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+    }
+    #share-prompt a:hover { color: var(--text); }
 
     /* ── Airline card ───────────────────────────────────────────────── */
     .airline-card {
@@ -336,10 +362,12 @@
 
   <div id="summary"></div>
   <div id="results"></div>
+  <div id="share-prompt">Know someone about to book? <a id="copy-link" href="#">Send them here.</a></div>
 
   <footer>
     Track record (50%) · FAA delays (15%) · Hub weather (15%) · News (20%)<br>
-    No ads. No affiliates. <span id="last-updated"></span><br>
+    This is what the most-traveled person you know would tell you before you booked. No ads. No opinion. Just the data.<br>
+    No affiliates. <span id="last-updated"></span><br>
     Built by <a href="https://github.com/writesdavid/dice-flights" target="_blank" rel="noopener">David Hamilton</a> · <a href="https://writesdavid.substack.com" target="_blank" rel="noopener">writesdavid.substack.com</a>
   </footer>
 
@@ -347,12 +375,12 @@
     const DICE_FACES = ['&#9856;','&#9857;','&#9858;','&#9859;','&#9860;','&#9861;'];
     const LOADING_PHRASES = [
       'Checking the skies...',
-      'Reading the news...',
-      'Asking the FAA...',
-      'Counting lost bags...',
-      'Scanning hub delays...',
-      'Crunching the numbers...',
-      'Looking at the forecast...',
+      'Pulling the last 12 months of flights...',
+      'Asking the FAA what\'s backed up right now...',
+      'Checking which bags didn\'t make it...',
+      'Looking at hub weather this week...',
+      'Reading what\'s in the news...',
+      'Seeing who\'s been cancelling lately...',
     ];
 
     const diceEl    = document.getElementById('dice');
@@ -363,6 +391,16 @@
     const heroEl    = document.getElementById('hero');
     const loadingEl = document.getElementById('loading');
     const phraseEl  = document.getElementById('loading-phrase');
+    const shareEl   = document.getElementById('share-prompt');
+    const copyLinkEl = document.getElementById('copy-link');
+
+    copyLinkEl.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        copyLinkEl.textContent = 'Copied.';
+        setTimeout(() => { copyLinkEl.textContent = 'Send them here.'; }, 2000);
+      });
+    });
 
     function cls(v) {
       if (v == null) return 'null';
@@ -372,7 +410,7 @@
 
     // ── Summary bar chart ─────────────────────────────────────────────
     function renderSummary(airlines) {
-      summaryEl.innerHTML = '';
+      summaryEl.innerHTML = '<div class="summary-title">Here\'s the verdict</div>';
       airlines.forEach((a, i) => {
         const c = cls(a.score);
         const row = document.createElement('div');
@@ -401,9 +439,9 @@
     function signalBars(bts, faa, weather, news) {
       const signals = [
         { key: 'bts',     label: 'Track record', sig: bts },
-        { key: 'faa',     label: 'FAA',          sig: faa },
-        { key: 'weather', label: 'Weather',       sig: weather },
-        { key: 'news',    label: 'News',          sig: news },
+        { key: 'faa',     label: 'Right now',    sig: faa },
+        { key: 'weather', label: 'This week',    sig: weather },
+        { key: 'news',    label: 'In the news',  sig: news },
       ];
       return signals.map(({ key, label, sig }) => {
         const s = sig?.score;
@@ -438,9 +476,15 @@
         const otCls = ot == null ? '' : ot >= 82 ? 'hi' : ot >= 68 ? '' : 'lo bad';
         const caCls = ca == null ? '' : ca <= 1.2 ? 'hi' : ca <= 2 ? '' : 'bad';
         const parts = [];
-        if (ot != null) parts.push(`<strong class="${otCls}">${ot}%</strong> on-time`);
-        if (ca != null) parts.push(`<strong class="${caCls}">${ca}%</strong> cancelled`);
-        if (parts.length) stats = `<div class="key-stats">${parts.join(' &nbsp;·&nbsp; ')}</div>`;
+        if (ot != null) {
+          const otLabel = ot >= 82 ? 'most flights land on time' : ot >= 68 ? 'about average for the industry' : 'delays are common here';
+          parts.push(`<strong class="${otCls}">${ot}%</strong> on-time &mdash; ${otLabel}`);
+        }
+        if (ca != null) {
+          const caLabel = ca <= 1.2 ? 'rarely cancels' : ca <= 2 ? 'cancels occasionally' : 'cancels more than most';
+          parts.push(`<strong class="${caCls}">${ca}%</strong> cancelled &mdash; ${caLabel}`);
+        }
+        if (parts.length) stats = `<div class="key-stats">${parts.join('<br>')}</div>`;
       }
 
       const card = document.createElement('div');
@@ -527,6 +571,7 @@
       renderSummary(data.airlines);
       data.airlines.forEach((a, i) => resultsEl.appendChild(renderCard(a, i)));
       resultsEl.classList.add('visible');
+      shareEl.classList.add('visible');
 
       // Animate signal bar fills after paint
       requestAnimationFrame(() => requestAnimationFrame(() => {
