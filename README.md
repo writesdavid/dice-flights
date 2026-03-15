@@ -10,33 +10,29 @@ The winner changes. No airline is consistently good. That's the point.
 
 ## What it does
 
-Pulls active flight data for 8 US carriers from AviationStack every 12 hours. Scores each airline on on-time performance and average delay. Ranks them. You roll the dice to reveal the standings.
+Scores 8 US carriers on predicted reliability using two signals:
+
+- **DOT on-time performance** (65%) — 10 months of official government data from the Bureau of Transportation Statistics, bundled in the repo. Tracks on-time rate, cancellation rate, and whether each airline is improving or declining.
+- **News sentiment** (35%) — live headlines from Google News, scored for negative signals (cancellations, delays, incidents) vs positive. Refreshed every 2 hours.
+
+No API keys. No accounts. No third-party services.
 
 **Airlines tracked:** Delta, United, American, Southwest, Alaska, JetBlue, Spirit, Frontier
-
-**Scoring:**
-- On-time = departure delay under 15 minutes (industry standard)
-- Score = `on_time_pct × 0.7 + (1 - avg_delay/120) × 30`
-- Higher is better
 
 ---
 
 ## Run it locally
 
-You need Node.js and an AviationStack API key (free tier: 500 calls/month).
+You need Node.js — that's it.
 
 ```bash
 git clone https://github.com/writesdavid/dice-flights.git
 cd dice-flights
 npm install
-cp .env.example .env
-# add your AviationStack key to .env
 node server.js
 ```
 
-Open `http://localhost:3000`.
-
-Get a free AviationStack key at [aviationstack.com](https://aviationstack.com).
+Open `http://localhost:3000` and roll.
 
 ---
 
@@ -50,8 +46,7 @@ Get a free AviationStack key at [aviationstack.com](https://aviationstack.com).
 4. Set:
    - Build command: `npm install`
    - Start command: `node server.js`
-5. Add env var: `AVIATIONSTACK_KEY=your_key`
-6. Deploy
+5. Deploy — no env vars needed
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
@@ -60,12 +55,25 @@ Get a free AviationStack key at [aviationstack.com](https://aviationstack.com).
 1. Fork this repo
 2. Sign up at [railway.app](https://railway.app)
 3. New Project → Deploy from GitHub repo
-4. Add env var: `AVIATIONSTACK_KEY=your_key`
+4. Deploy — no env vars needed
+
+---
+
+## Refresh the data
+
+The bundled DOT data covers January–October 2024. To update it:
+
+```bash
+node scripts/update-bts.js
+```
+
+If BTS blocks the automated download (they require a browser session), the script prints manual instructions. Takes about 5 minutes. Worth doing quarterly.
 
 ---
 
 ## Stack
 
 - Node.js + Express
-- AviationStack API (free tier)
+- DOT/BTS on-time data (bundled JSON, updated quarterly)
+- Google News RSS (no key)
 - Vanilla JS, no framework, no build step
