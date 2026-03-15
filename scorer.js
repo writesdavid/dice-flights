@@ -1,17 +1,20 @@
-// BTS historical performance: 65%
-// News sentiment (Google News RSS): 35%
-// No API keys required for either source.
+// Signal weights
+// BTS historical (on-time, cancellations, baggage, complaints, trend): 50%
+// FAA live hub delays: 15%
+// Weather forecast at primary hub: 15%
+// News sentiment (Google News RSS): 20%
 
-const WEIGHTS = { bts: 0.65, news: 0.35 };
+const WEIGHTS = { bts: 0.50, faa: 0.15, weather: 0.15, news: 0.20 };
 
-function computeScore(bts, reddit, news) {
-  // reddit param kept for API compatibility but ignored
+function computeScore(bts, faa, weather, news) {
   const sources = [
-    { value: bts.score,  weight: WEIGHTS.bts },
-    { value: news.score, weight: WEIGHTS.news },
+    { value: bts?.score,     weight: WEIGHTS.bts },
+    { value: faa?.score,     weight: WEIGHTS.faa },
+    { value: weather?.score, weight: WEIGHTS.weather },
+    { value: news?.score,    weight: WEIGHTS.news },
   ];
 
-  const available = sources.filter(s => s.value !== null);
+  const available = sources.filter(s => s.value !== null && s.value !== undefined);
   if (available.length === 0) return null;
 
   const totalWeight = available.reduce((s, v) => s + v.weight, 0);

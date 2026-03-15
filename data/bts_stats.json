@@ -1,8 +1,50 @@
 {
-  "source": "US DOT Bureau of Transportation Statistics — On-Time Reporting Carrier Performance",
+  "source": "US DOT Bureau of Transportation Statistics — On-Time, Baggage, and Consumer Reports",
   "period": "January 2024 – October 2024",
   "note": "Run scripts/update-bts.js to refresh. On-time = arrival within 15 min of schedule.",
   "lastUpdated": "2024-11-01",
+  "annuals": {
+    "DL": {
+      "baggagePer100": 2.1,
+      "complaintsPer100k": 1.8,
+      "carrierCancelPct": 0.8
+    },
+    "UA": {
+      "baggagePer100": 2.5,
+      "complaintsPer100k": 2.8,
+      "carrierCancelPct": 0.7
+    },
+    "AA": {
+      "baggagePer100": 2.8,
+      "complaintsPer100k": 3.5,
+      "carrierCancelPct": 0.9
+    },
+    "WN": {
+      "baggagePer100": 3.5,
+      "complaintsPer100k": 2.5,
+      "carrierCancelPct": 1.0
+    },
+    "AS": {
+      "baggagePer100": 1.8,
+      "complaintsPer100k": 1.2,
+      "carrierCancelPct": 0.5
+    },
+    "B6": {
+      "baggagePer100": 2.2,
+      "complaintsPer100k": 4.2,
+      "carrierCancelPct": 1.2
+    },
+    "NK": {
+      "baggagePer100": 5.8,
+      "complaintsPer100k": 14.8,
+      "carrierCancelPct": 2.5
+    },
+    "F9": {
+      "baggagePer100": 5.0,
+      "complaintsPer100k": 9.5,
+      "carrierCancelPct": 2.0
+    }
+  },
   "carriers": {
     "DL": {
       "name": "Delta",

@@ -9,18 +9,16 @@
 
     :root {
       --bg: #0d0d0d;
-      --surface: #161616;
-      --border: #252525;
+      --surface: #141414;
+      --surface2: #1c1c1c;
+      --border: #242424;
       --text: #f0f0f0;
       --muted: #666;
-      --muted2: #444;
+      --muted2: #333;
       --green: #22c55e;
       --yellow: #eab308;
       --red: #ef4444;
       --accent: #6366f1;
-      --up: #22c55e;
-      --down: #ef4444;
-      --flat: #666;
     }
 
     body {
@@ -44,11 +42,7 @@
       letter-spacing: -0.04em;
     }
 
-    .subhead {
-      color: var(--muted);
-      margin-top: 0.5rem;
-      font-size: 1rem;
-    }
+    .subhead { color: var(--muted); margin-top: 0.5rem; font-size: 1rem; }
 
     .roll-area {
       display: flex;
@@ -58,13 +52,7 @@
       padding: 2rem 1rem 1.5rem;
     }
 
-    #dice {
-      font-size: 4.5rem;
-      cursor: pointer;
-      user-select: none;
-      display: inline-block;
-    }
-
+    #dice { font-size: 4.5rem; cursor: pointer; user-select: none; display: inline-block; }
     #dice.rolling { animation: roll 1.2s ease-out forwards; }
 
     @keyframes roll {
@@ -93,39 +81,11 @@
     #roll-btn:active  { transform: scale(0.97); }
     #roll-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    #status {
-      color: var(--muted);
-      font-size: 0.875rem;
-      min-height: 1.2em;
-      text-align: center;
-    }
-
-    #loading-bar {
-      width: 220px;
-      height: 3px;
-      background: var(--border);
-      border-radius: 2px;
-      overflow: hidden;
-      display: none;
-    }
-
-    #loading-bar.active { display: block; }
-
-    #loading-bar-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 2px;
-      animation: loadPulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes loadPulse {
-      0%, 100% { width: 15%; margin-left: 0; }
-      50%       { width: 40%; margin-left: 45%; }
-    }
+    #status { color: var(--muted); font-size: 0.875rem; min-height: 1.2em; }
 
     #results {
       width: 100%;
-      max-width: 720px;
+      max-width: 740px;
       padding: 0 1rem 2rem;
       display: none;
       flex-direction: column;
@@ -137,105 +97,81 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 1rem 1.25rem;
+      overflow: hidden;
       opacity: 0;
       transform: translateY(6px);
       animation: fadeUp 0.3s ease forwards;
     }
-
     @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
     .card-top {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      margin-bottom: 0.85rem;
+      padding: 1rem 1.25rem 0.85rem;
     }
 
-    .rank {
-      font-size: 1.3rem;
-      font-weight: 800;
-      width: 1.8rem;
-      text-align: center;
-      flex-shrink: 0;
-    }
+    .rank { font-size: 1.3rem; font-weight: 800; width: 1.8rem; text-align: center; flex-shrink: 0; }
     .rank.good { color: var(--green); }
     .rank.ok   { color: var(--yellow); }
     .rank.bad  { color: var(--red); }
 
     .airline-name-wrap { flex: 1; }
-    .airline-name {
-      font-weight: 700;
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .iata {
-      color: var(--muted);
-      font-weight: 400;
-      font-size: 0.8rem;
-    }
-    .trend {
-      font-size: 0.75rem;
+    .airline-name { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .iata { color: var(--muted); font-weight: 400; font-size: 0.8rem; }
+
+    .trend-badge {
+      font-size: 0.7rem;
       font-weight: 700;
       padding: 0.15rem 0.4rem;
       border-radius: 4px;
     }
-    .trend.up   { color: var(--up);   background: rgba(34,197,94,0.12); }
-    .trend.down { color: var(--down); background: rgba(239,68,68,0.12); }
-    .trend.flat { color: var(--flat); background: rgba(100,100,100,0.12); }
+    .trend-badge.up   { color: var(--green);  background: rgba(34,197,94,0.12); }
+    .trend-badge.down { color: var(--red);    background: rgba(239,68,68,0.12); }
+    .trend-badge.flat { color: var(--muted);  background: rgba(100,100,100,0.1); }
 
-    .card-score {
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1;
-    }
+    .card-score { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
     .card-score.good { color: var(--green); }
     .card-score.ok   { color: var(--yellow); }
     .card-score.bad  { color: var(--red); }
 
-    .signals { display: flex; flex-direction: column; gap: 0.5rem; }
-
-    .sig-row {
+    .signal-sections {
+      border-top: 1px solid var(--border);
       display: grid;
-      grid-template-columns: 76px 1fr auto;
-      align-items: center;
-      gap: 0.65rem;
+      grid-template-columns: 1fr 1fr;
     }
 
-    .sig-label {
-      font-size: 0.7rem;
-      color: var(--muted);
+    .sig-section {
+      padding: 0.65rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sig-section:nth-child(odd) { border-right: 1px solid var(--border); }
+    .sig-section:last-child:nth-child(odd) { grid-column: 1 / -1; border-right: none; }
+
+    .sig-heading {
+      font-size: 0.62rem;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
     }
 
-    .bar-bg {
-      height: 4px;
-      background: var(--border);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.55s ease;
-    }
+    .sig-bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+
+    .bar-bg { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 2px; transition: width 0.55s ease; }
     .bar-fill.good { background: var(--green); }
     .bar-fill.ok   { background: var(--yellow); }
     .bar-fill.bad  { background: var(--red); }
-    .bar-fill.null { background: var(--muted2); width: 12% !important; }
+    .bar-fill.null { background: var(--muted2); width: 8% !important; }
 
-    .sig-detail {
-      font-size: 0.68rem;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 200px;
-    }
+    .bar-val { font-size: 0.72rem; font-weight: 700; width: 2.2rem; text-align: right; flex-shrink: 0; }
+    .bar-val.good { color: var(--green); }
+    .bar-val.ok   { color: var(--yellow); }
+    .bar-val.bad  { color: var(--red); }
+    .bar-val.null { color: var(--muted); }
+
+    .sig-detail { font-size: 0.68rem; color: var(--muted); line-height: 1.4; }
 
     footer {
       margin-top: auto;
@@ -245,8 +181,6 @@
       font-size: 0.77rem;
       line-height: 1.7;
     }
-
-    #last-updated { font-style: italic; }
   </style>
 </head>
 <body>
@@ -259,67 +193,55 @@
   <div class="roll-area">
     <div id="dice">&#9861;</div>
     <button id="roll-btn">Roll</button>
-    <div id="loading-bar"><div id="loading-bar-fill"></div></div>
     <div id="status"></div>
   </div>
 
   <div id="results"></div>
 
   <footer>
-    Predicted reliability based on <span id="bts-period">historical</span> DOT on-time data<br>
-    and current news signals. No ads, no affiliate links.<br>
-    <span id="last-updated"></span>
+    Four signals: <span id="bts-period">historical</span> DOT performance &middot; FAA hub delays &middot; hub weather forecast &middot; news sentiment.<br>
+    No API keys. No ads. <span id="last-updated"></span>
   </footer>
 
   <script>
     const DICE = ['&#9856;','&#9857;','&#9858;','&#9859;','&#9860;','&#9861;'];
+    const dice = document.getElementById('dice');
+    const btn = document.getElementById('roll-btn');
+    const statusEl = document.getElementById('status');
+    const results = document.getElementById('results');
 
-    const dice       = document.getElementById('dice');
-    const btn        = document.getElementById('roll-btn');
-    const statusEl   = document.getElementById('status');
-    const loadingBar = document.getElementById('loading-bar');
-    const results    = document.getElementById('results');
-    const lastUpEl   = document.getElementById('last-updated');
-
-    function rankCls(rank) {
-      return rank <= 2 ? 'good' : rank <= 5 ? 'ok' : 'bad';
+    function rankCls(rank) { return rank <= 2 ? 'good' : rank <= 5 ? 'ok' : 'bad'; }
+    function scoreCls(s) {
+      if (s === null || s === undefined) return 'null';
+      return s >= 70 ? 'good' : s >= 52 ? 'ok' : 'bad';
     }
 
-    function scoreCls(score) {
-      if (score === null) return 'null';
-      return score >= 70 ? 'good' : score >= 52 ? 'ok' : 'bad';
-    }
-
-    function trendCls(delta) {
-      if (delta === null || delta === undefined) return 'flat';
-      return delta > 1.5 ? 'up' : delta < -1.5 ? 'down' : 'flat';
-    }
-
-    function trendLabel(delta) {
-      if (delta === null || delta === undefined) return '';
-      if (delta > 1.5)  return '↑ improving';
-      if (delta < -1.5) return '↓ declining';
-      return '→ stable';
-    }
-
-    function sigRow(label, sig) {
-      const pct = sig.score !== null ? sig.score : 0;
-      const cls = scoreCls(sig.score);
+    function sigSection(heading, sig) {
+      const pct = sig?.score ?? 0;
+      const cls = scoreCls(sig?.score);
+      const valStr = sig?.score != null ? sig.score : '—';
       return `
-        <div class="sig-row">
-          <div class="sig-label">${label}</div>
-          <div class="bar-bg"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div>
-          <div class="sig-detail">${sig.score !== null ? sig.score + ' · ' : ''}${sig.detail}</div>
+        <div class="sig-section">
+          <div class="sig-heading">${heading}</div>
+          <div class="sig-bar-row">
+            <div class="bar-bg"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div>
+            <div class="bar-val ${cls}">${valStr}</div>
+          </div>
+          <div class="sig-detail">${sig?.detail ?? 'No data'}</div>
         </div>`;
+    }
+
+    function trendBadge(delta) {
+      if (delta == null) return '';
+      if (delta > 1.5)  return `<span class="trend-badge up">↑ improving</span>`;
+      if (delta < -1.5) return `<span class="trend-badge down">↓ declining</span>`;
+      return `<span class="trend-badge flat">→ stable</span>`;
     }
 
     function renderCard(a, i) {
       const rCls = rankCls(a.rank);
       const sCls = scoreCls(a.score);
-      const btsRaw = a.signals.bts.raw;
-      const delta = btsRaw ? btsRaw.trendDelta : null;
-      const tCls = trendCls(delta);
-      const tLabel = trendLabel(delta);
+      const delta = a.signals.bts?.raw?.trendDelta;
 
       const card = document.createElement('div');
       card.className = 'airline-card';
@@ -332,36 +254,24 @@
             <div class="airline-name">
               ${a.name}
               <span class="iata">${a.iata}</span>
-              ${tLabel ? `<span class="trend ${tCls}">${tLabel}</span>` : ''}
+              ${trendBadge(delta)}
             </div>
           </div>
           <div class="card-score ${sCls}">${a.score ?? '—'}</div>
         </div>
-        <div class="signals">
-          ${sigRow('6-month avg', a.signals.bts)}
-          ${sigRow('News', a.signals.news)}
+        <div class="signal-sections">
+          ${sigSection('Track record', a.signals.bts)}
+          ${sigSection('Right now', a.signals.faa)}
+          ${sigSection('This week', a.signals.weather)}
+          ${sigSection('In the news', a.signals.news)}
         </div>`;
 
       return card;
     }
 
-    async function waitForReady(maxWaitMs = 300000) {
-      const start = Date.now();
-      while (Date.now() - start < maxWaitMs) {
-        const res = await fetch('/api/status');
-        const json = await res.json();
-        if (json.ready) return true;
-        statusEl.textContent = 'Loading 6 months of DOT data — almost ready...';
-        loadingBar.classList.add('active');
-        await new Promise(r => setTimeout(r, 3000));
-      }
-      return false;
-    }
-
     async function rollDice() {
       btn.disabled = true;
       statusEl.textContent = '';
-      loadingBar.classList.remove('active');
 
       dice.classList.remove('rolling');
       void dice.offsetWidth;
@@ -371,28 +281,16 @@
         dice.innerHTML = DICE[Math.floor(Math.random() * DICE.length)];
       }, 100);
 
-      // Try fetch — if not ready, wait
       let data;
       try {
-        let res = await fetch('/api/airlines');
-
+        const res = await fetch('/api/airlines');
         if (res.status === 503) {
           clearInterval(shuffle);
           dice.classList.remove('rolling');
-          const ready = await waitForReady();
-          loadingBar.classList.remove('active');
-          statusEl.textContent = '';
-          if (!ready) {
-            statusEl.textContent = 'Data took too long to load.';
-            btn.disabled = false;
-            return;
-          }
-          // Re-roll after data is ready
+          statusEl.textContent = 'Loading data — try again in a moment.';
           btn.disabled = false;
-          rollDice();
           return;
         }
-
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         data = await res.json();
       } catch (err) {
@@ -413,12 +311,10 @@
       data.airlines.forEach((a, i) => results.appendChild(renderCard(a, i)));
       results.classList.add('visible');
 
+      if (data.btsPeriod) document.getElementById('bts-period').textContent = data.btsPeriod;
       if (data.lastFetched) {
-        const d = new Date(data.lastFetched);
-        lastUpEl.textContent = `Signals refreshed: ${d.toLocaleString()}`;
-      }
-      if (data.btsPeriod) {
-        document.getElementById('bts-period').textContent = data.btsPeriod;
+        document.getElementById('last-updated').textContent =
+          `Signals refreshed: ${new Date(data.lastFetched).toLocaleString()}`;
       }
 
       btn.disabled = false;

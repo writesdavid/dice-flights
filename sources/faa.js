@@ -1,6 +1,14 @@
 const fetch = require('node-fetch');
 
-const AIRLINE_HUBS = {
+// Primary hub per airline — where cascading delays hurt them most
+const PRIMARY_HUBS = {
+  DL: 'ATL', UA: 'ORD', AA: 'DFW',
+  WN: 'MDW', AS: 'SEA', B6: 'JFK',
+  NK: 'FLL', F9: 'DEN',
+};
+
+// All hubs per airline for broader signal
+const ALL_HUBS = {
   DL: ['ATL', 'JFK', 'LAX', 'MSP', 'DTW', 'SEA', 'SLC'],
   UA: ['ORD', 'EWR', 'IAH', 'DEN', 'SFO'],
   AA: ['DFW', 'CLT', 'PHL', 'PHX', 'MIA'],
@@ -11,31 +19,27 @@ const AIRLINE_HUBS = {
   F9: ['DEN', 'ORD', 'ATL', 'MCO'],
 };
 
-// Parse all delayed/stopped airports from FAA NAS Status XML
-function parseNasStatus(xml) {
-  const airports = {}; // { IATA: { groundStop: bool, maxDelay: number } }
+let nasCache = { data: null, fetchedAt: 0 };
+const NAS_TTL = 10 * 60 * 1000;
 
-  // Ground stops
+function parseNasXml(xml) {
+  const airports = {};
+
   const gsBlock = xml.match(/<Ground_Stop_List>([\s\S]*?)<\/Ground_Stop_List>/);
   if (gsBlock) {
-    const arpts = [...gsBlock[1].matchAll(/<ARPT>(\w+)<\/ARPT>/g)];
-    for (const m of arpts) {
+    for (const m of gsBlock[1].matchAll(/<ARPT>(\w+)<\/ARPT>/g)) {
       airports[m[1]] = { groundStop: true, maxDelay: 999 };
     }
   }
 
-  // General delays
   const delayBlock = xml.match(/<Arrival_Departure_Delay_List>([\s\S]*?)<\/Arrival_Departure_Delay_List>/);
   if (delayBlock) {
-    const entries = [...delayBlock[1].matchAll(/<Delay>([\s\S]*?)<\/Delay>/g)];
-    for (const entry of entries) {
-      const arptMatch = entry[1].match(/<ARPT>(\w+)<\/ARPT>/);
-      const maxMatch = entry[1].match(/<Max>(\d+)\s*minutes<\/Max>/);
-      if (!arptMatch) continue;
-      const code = arptMatch[1];
-      const maxDelay = maxMatch ? parseInt(maxMatch[1]) : 30;
-      if (!airports[code] || airports[code].maxDelay < maxDelay) {
-        airports[code] = { groundStop: false, maxDelay };
+    for (const entry of delayBlock[1].matchAll(/<Delay>([\s\S]*?)<\/Delay>/g)) {
+      const arpt = entry[1].match(/<ARPT>(\w+)<\/ARPT>/)?.[1];
+      const max  = parseInt(entry[1].match(/<Max>(\d+)\s*minutes<\/Max>/)?.[1]) || 30;
+      if (!arpt) continue;
+      if (!airports[arpt] || airports[arpt].maxDelay < max) {
+        airports[arpt] = { groundStop: false, maxDelay: max };
       }
     }
   }
@@ -43,7 +47,20 @@ function parseNasStatus(xml) {
   return airports;
 }
 
-function airportScore(info) {
+async function getNasStatus() {
+  if (nasCache.data && Date.now() - nasCache.fetchedAt < NAS_TTL) return nasCache.data;
+  try {
+    const res = await fetch('https://nasstatus.faa.gov/api/airport-status-information', { timeout: 10000 });
+    const xml = await res.text();
+    nasCache = { data: parseNasXml(xml), fetchedAt: Date.now() };
+    return nasCache.data;
+  } catch (e) {
+    console.error('FAA fetch error:', e.message);
+    return nasCache.data || null;
+  }
+}
+
+function hubScore(info) {
   if (!info) return 100;
   if (info.groundStop) return 0;
   const d = info.maxDelay;
@@ -55,44 +72,27 @@ function airportScore(info) {
   return 92;
 }
 
-let nasCache = { data: null, fetchedAt: 0 };
-const NAS_TTL = 10 * 60 * 1000; // re-fetch every 10 min
-
-async function getNasStatus() {
-  if (nasCache.data && Date.now() - nasCache.fetchedAt < NAS_TTL) {
-    return nasCache.data;
-  }
-  try {
-    const res = await fetch('https://nasstatus.faa.gov/api/airport-status-information');
-    const xml = await res.text();
-    const parsed = parseNasStatus(xml);
-    nasCache = { data: parsed, fetchedAt: Date.now() };
-    return parsed;
-  } catch (e) {
-    console.error('FAA fetch error:', e.message);
-    return nasCache.data || null;
-  }
-}
-
 async function getFaaScore(iata) {
-  const nasStatus = await getNasStatus();
-  if (!nasStatus) return { score: null, detail: 'FAA data unavailable' };
+  const nas = await getNasStatus();
+  if (!nas) return { score: null, detail: 'FAA unavailable' };
 
-  const hubs = AIRLINE_HUBS[iata] || [];
-  const scores = hubs.map(h => airportScore(nasStatus[h]));
+  const hubs = ALL_HUBS[iata] || [];
+  const scores = hubs.map(h => hubScore(nas[h]));
   const avg = Math.round(scores.reduce((s, v) => s + v, 0) / scores.length);
 
-  const affected = hubs.filter(h => nasStatus[h]);
-  const gsHubs = affected.filter(h => nasStatus[h].groundStop);
-  const delayHubs = affected.filter(h => !nasStatus[h].groundStop);
+  const primary = PRIMARY_HUBS[iata];
+  const primaryInfo = nas[primary];
+  const affected = hubs.filter(h => nas[h]);
+  const gsHubs = affected.filter(h => nas[h].groundStop);
+  const delayHubs = affected.filter(h => !nas[h].groundStop);
 
   let detail;
   if (affected.length === 0) {
-    detail = 'No delays at hubs';
+    detail = `No delays at hubs`;
   } else {
     const parts = [];
-    if (gsHubs.length) parts.push(`Ground stop: ${gsHubs.join(', ')}`);
-    if (delayHubs.length) parts.push(`Delays: ${delayHubs.map(h => `${h} ${nasStatus[h].maxDelay}m`).join(', ')}`);
+    if (gsHubs.length)   parts.push(`Ground stop: ${gsHubs.join(', ')}`);
+    if (delayHubs.length) parts.push(`Delays: ${delayHubs.map(h => `${h} ${nas[h].maxDelay}m`).join(', ')}`);
     detail = parts.join(' · ');
   }
 
