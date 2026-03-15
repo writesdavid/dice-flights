@@ -3,24 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dice Flights — Roll for the airline that'll actually deliver</title>
+  <title>Dice Flights — Which airline will actually deliver?</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #09090b;
-      --surface:  #111113;
-      --surface2: #18181c;
-      --border:   #232328;
-      --border2:  #2c2c34;
-      --text:     #f1f1f3;
-      --muted:    #56566a;
-      --muted2:   #25252e;
-      --green:    #22c55e;
-      --yellow:   #eab308;
-      --red:      #ef4444;
-      --accent:   #6366f1;
-      --gold:     #f59e0b;
+      --bg:      #09090b;
+      --surface: #111113;
+      --surface2:#18181c;
+      --border:  #232328;
+      --text:    #f1f1f3;
+      --muted:   #56566a;
+      --muted2:  #25252e;
+      --green:   #22c55e;
+      --yellow:  #eab308;
+      --red:     #ef4444;
+      --accent:  #6366f1;
+      --gold:    #f59e0b;
     }
 
     body {
@@ -33,7 +32,7 @@
       align-items: center;
     }
 
-    /* ── Hero (centers vertically before first roll) ─────────────────── */
+    /* ── Hero ───────────────────────────────────────────────────────── */
     #hero {
       display: flex;
       flex-direction: column;
@@ -44,17 +43,9 @@
       padding-bottom: 4rem;
       transition: flex 0.5s ease;
     }
-    #hero.settled {
-      flex: 0;
-      padding-bottom: 0;
-    }
+    #hero.settled { flex: 0; padding-bottom: 0; }
 
-    /* ── Header ─────────────────────────────────────────────────────── */
-    header {
-      text-align: center;
-      padding: 0 1.5rem 0.5rem;
-      max-width: 560px;
-    }
+    header { text-align: center; padding: 0 1.5rem 0.25rem; }
 
     h1 {
       font-size: clamp(2.4rem, 6vw, 3.6rem);
@@ -62,16 +53,10 @@
       letter-spacing: -0.045em;
       line-height: 1;
     }
-
     .tagline {
-      margin-top: 0.85rem;
+      margin-top: 0.6rem;
       font-size: 0.88rem;
-      line-height: 1.6;
       color: var(--muted);
-    }
-    .tagline strong {
-      color: #7c7c96;
-      font-weight: 500;
     }
 
     /* ── Roll area ──────────────────────────────────────────────────── */
@@ -80,7 +65,7 @@
       flex-direction: column;
       align-items: center;
       gap: 1.25rem;
-      padding: 2rem 1rem 1.25rem;
+      padding: 2rem 1rem 1rem;
     }
 
     #dice {
@@ -93,7 +78,6 @@
     }
     #dice:hover { filter: drop-shadow(0 0 12px rgba(99,102,241,0.5)); }
     #dice.rolling { animation: roll 1.2s ease-out forwards; }
-
     @keyframes roll {
       0%   { transform: rotate(0deg)   scale(1); }
       20%  { transform: rotate(180deg) scale(1.3); }
@@ -120,14 +104,8 @@
     #roll-btn:active  { transform: scale(0.97); }
     #roll-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 
-    /* ── Loading state ───────────────────────────────────────────────── */
-    #loading {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.5rem 0 0.25rem;
-    }
+    /* ── Loading ────────────────────────────────────────────────────── */
+    #loading { display: none; flex-direction: column; align-items: center; gap: 0.75rem; padding: 0.25rem 0; }
     #loading.visible { display: flex; }
 
     .loading-phrase {
@@ -140,15 +118,9 @@
       from { opacity: 0; transform: translateY(4px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
-    .loading-dots {
-      display: flex;
-      gap: 5px;
-    }
+    .loading-dots { display: flex; gap: 5px; }
     .loading-dots span {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
+      width: 5px; height: 5px; border-radius: 50%;
       background: var(--accent);
       animation: dotPulse 1.2s ease-in-out infinite;
     }
@@ -156,27 +128,14 @@
     .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
     @keyframes dotPulse {
       0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
-      40%            { transform: scale(1);   opacity: 1; }
+      40%           { transform: scale(1);   opacity: 1; }
     }
 
     #status { color: var(--red); font-size: 0.875rem; min-height: 1.2em; text-align: center; }
 
     /* ── Summary bar chart ──────────────────────────────────────────── */
-    #summary {
-      display: none;
-      width: 100%;
-      max-width: 680px;
-      padding: 0 1rem 0.75rem;
-    }
+    #summary { display: none; width: 100%; max-width: 640px; padding: 0 1rem 0.75rem; }
     #summary.visible { display: block; }
-
-    .summary-title {
-      font-size: 0.62rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      margin-bottom: 0.7rem;
-    }
 
     .summary-row {
       display: flex;
@@ -188,50 +147,23 @@
     }
     @keyframes fadeIn { to { opacity: 1; } }
 
-    .sum-rank {
-      font-size: 0.68rem;
-      font-weight: 700;
-      width: 1.1rem;
-      text-align: right;
-      flex-shrink: 0;
-      color: var(--muted);
-    }
+    .sum-rank { font-size: 0.68rem; font-weight: 700; width: 1.1rem; text-align: right; flex-shrink: 0; color: var(--muted); }
     .sum-rank.good { color: var(--green); }
     .sum-rank.ok   { color: var(--yellow); }
     .sum-rank.bad  { color: var(--red); }
 
-    .sum-name {
-      font-size: 0.78rem;
-      font-weight: 600;
-      width: 5.5rem;
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
+    .sum-name { font-size: 0.78rem; font-weight: 600; width: 5.5rem; flex-shrink: 0; white-space: nowrap; }
 
-    .sum-bar-bg {
-      flex: 1;
-      height: 5px;
-      background: var(--muted2);
-      border-radius: 3px;
-      overflow: hidden;
-    }
+    .sum-bar-bg { flex: 1; height: 5px; background: var(--muted2); border-radius: 3px; overflow: hidden; }
     .sum-bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      width: 0;
+      height: 100%; border-radius: 3px; width: 0;
       transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .sum-bar-fill.good { background: var(--green); }
     .sum-bar-fill.ok   { background: var(--yellow); }
     .sum-bar-fill.bad  { background: var(--red); }
 
-    .sum-score {
-      font-size: 0.72rem;
-      font-weight: 700;
-      width: 1.9rem;
-      text-align: right;
-      flex-shrink: 0;
-    }
+    .sum-score { font-size: 0.72rem; font-weight: 700; width: 1.9rem; text-align: right; flex-shrink: 0; }
     .sum-score.good { color: var(--green); }
     .sum-score.ok   { color: var(--yellow); }
     .sum-score.bad  { color: var(--red); }
@@ -239,11 +171,11 @@
     /* ── Results ────────────────────────────────────────────────────── */
     #results {
       width: 100%;
-      max-width: 680px;
+      max-width: 640px;
       padding: 0.25rem 1rem 2.5rem;
       display: none;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0.55rem;
     }
     #results.visible { display: flex; }
 
@@ -258,46 +190,32 @@
       animation: fadeUp 0.35s ease forwards;
     }
     .airline-card.winner {
-      border-color: rgba(245,158,11,0.5);
-      box-shadow: 0 0 28px rgba(245,158,11,0.08);
+      border-color: rgba(245,158,11,0.45);
+      box-shadow: 0 0 28px rgba(245,158,11,0.07);
     }
     @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-    /* Card top row */
     .card-top {
       display: flex;
       align-items: center;
       gap: 0.85rem;
-      padding: 1rem 1.2rem 0.9rem;
+      padding: 0.9rem 1.2rem;
     }
 
     .rank-block {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 2.1rem;
+      width: 2rem;
       flex-shrink: 0;
     }
-    .rank-num {
-      font-size: 1.6rem;
-      font-weight: 800;
-      line-height: 1;
-    }
+    .rank-num { font-size: 1.55rem; font-weight: 800; line-height: 1; }
     .rank-num.good { color: var(--green); }
     .rank-num.ok   { color: var(--yellow); }
     .rank-num.bad  { color: var(--red); }
+    .winner-label { font-size: 0.55rem; font-weight: 700; color: var(--gold); letter-spacing: 0.04em; margin-top: 0.12rem; }
 
-    .winner-label {
-      font-size: 0.58rem;
-      font-weight: 700;
-      color: var(--gold);
-      letter-spacing: 0.05em;
-      margin-top: 0.15rem;
-    }
-
-    /* Airline name + stats */
     .airline-info { flex: 1; min-width: 0; }
-
     .airline-name {
       font-weight: 700;
       font-size: 0.97rem;
@@ -307,111 +225,90 @@
       flex-wrap: wrap;
     }
     .iata {
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--muted);
-      background: var(--surface2);
-      padding: 0.1rem 0.35rem;
-      border-radius: 3px;
+      font-size: 0.7rem; font-weight: 500; color: var(--muted);
+      background: var(--surface2); padding: 0.1rem 0.3rem; border-radius: 3px;
     }
     .trend-badge {
-      font-size: 0.62rem;
-      font-weight: 700;
-      padding: 0.12rem 0.38rem;
-      border-radius: 4px;
+      font-size: 0.6rem; font-weight: 700;
+      padding: 0.1rem 0.35rem; border-radius: 4px;
     }
     .trend-badge.up   { color: var(--green);  background: rgba(34,197,94,0.1); }
     .trend-badge.down { color: var(--red);    background: rgba(239,68,68,0.1); }
     .trend-badge.flat { color: var(--muted);  background: rgba(100,100,100,0.08); }
 
-    .stat-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.15rem 0.5rem;
-      margin-top: 0.45rem;
-    }
-    .stat-pill { font-size: 0.68rem; color: var(--muted); }
-    .stat-pill strong { font-weight: 600; color: #9898b0; }
-    .stat-pill.hi  strong { color: var(--green); }
-    .stat-pill.mid strong { color: var(--text); }
-    .stat-pill.lo  strong { color: var(--yellow); }
-    .stat-pill.bad strong { color: var(--red); }
+    .key-stats { margin-top: 0.35rem; font-size: 0.7rem; color: var(--muted); }
+    .key-stats strong { font-weight: 600; }
+    .key-stats .hi  { color: var(--green); }
+    .key-stats .lo  { color: var(--yellow); }
+    .key-stats .bad { color: var(--red); }
 
-    /* Score + radar */
-    .score-right {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.2rem;
-      flex-shrink: 0;
-    }
-    .card-score {
-      font-size: 2.1rem;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 1;
-    }
+    .card-score { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; flex-shrink: 0; }
     .card-score.good { color: var(--green); }
     .card-score.ok   { color: var(--yellow); }
     .card-score.bad  { color: var(--red); }
     .card-score.null { color: var(--muted); }
 
-    .radar-wrap {
-      position: relative;
-      width: 64px;
-      height: 64px;
-    }
-    .radar-wrap svg { display: block; }
-
-    /* Signal grid */
-    .signal-grid {
-      border-top: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-    .sig-cell {
-      padding: 0.55rem 1.2rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .sig-cell:nth-child(odd)  { border-right: 1px solid var(--border); }
-    .sig-cell:last-child:nth-child(odd) { grid-column: 1 / -1; border-right: none; }
-
-    .sig-label {
-      font-size: 0.58rem;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      color: var(--muted);
-      margin-bottom: 0.28rem;
-    }
-    .sig-bar-row {
+    /* ── Weighted signal bars ────────────────────────────────────────
+       Width  = signal weight (how much it counts)
+       Height = signal score  (how well this airline does on it)
+       Empty space above = room left — context built in
+    ─────────────────────────────────────────────────────────────── */
+    .signal-bars {
       display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-bottom: 0.22rem;
+      height: 56px;
+      border-top: 1px solid var(--border);
     }
-    .sig-bar-bg  { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
-    .sig-bar-fill { height: 100%; border-radius: 2px; }
-    .sig-bar-fill.good { background: var(--green); }
-    .sig-bar-fill.ok   { background: var(--yellow); }
-    .sig-bar-fill.bad  { background: var(--red); }
-    .sig-bar-fill.null { background: var(--muted2); width: 8% !important; }
-    .sig-val { font-size: 0.68rem; font-weight: 700; width: 1.8rem; text-align: right; flex-shrink: 0; }
-    .sig-val.good { color: var(--green); }
-    .sig-val.ok   { color: var(--yellow); }
-    .sig-val.bad  { color: var(--red); }
-    .sig-val.null { color: var(--muted); }
-    .sig-detail { font-size: 0.63rem; color: var(--muted); line-height: 1.4; }
+
+    .sbar {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      cursor: default;
+    }
+    .sbar:last-child { border-right: none; }
+
+    /* widths by weight */
+    .sbar.bts     { flex: 50; }
+    .sbar.faa     { flex: 15; }
+    .sbar.weather { flex: 15; }
+    .sbar.news    { flex: 20; }
+
+    .sbar-fill {
+      width: 100%;
+      height: 0;
+      transition: height 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .sbar-fill.good { background: rgba(34,197,94,0.55); }
+    .sbar-fill.ok   { background: rgba(234,179,8,0.5); }
+    .sbar-fill.bad  { background: rgba(239,68,68,0.45); }
+    .sbar-fill.null { background: var(--muted2); height: 10% !important; }
+
+    .sbar-label {
+      position: absolute;
+      top: 5px;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 0.52rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.25);
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+    }
 
     /* ── Footer ─────────────────────────────────────────────────────── */
     footer {
       margin-top: auto;
-      padding: 2.25rem 1rem;
+      padding: 2rem 1rem;
       text-align: center;
       color: var(--muted);
-      font-size: 0.73rem;
-      line-height: 1.9;
+      font-size: 0.72rem;
+      line-height: 1.8;
     }
-    footer a { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -419,10 +316,7 @@
   <div id="hero">
     <header>
       <h1>Roll the dice.</h1>
-      <p class="tagline">
-        Because the only loyalty we have is to our families, not an airline.<br>
-        <strong>Eight carriers. Four signals. One honest ranking.</strong>
-      </p>
+      <p class="tagline">Loyalty to your family. Not your airline.</p>
     </header>
 
     <div class="roll-area">
@@ -440,12 +334,8 @@
   <div id="results"></div>
 
   <footer>
-    Track record (50%): DOT Bureau of Transportation Statistics &middot;
-    Right now (15%): FAA NAS Status &middot;
-    This week (15%): Open-Meteo forecast &middot;
-    In the news (20%): Google News<br>
-    No API keys. No ads. No affiliates.
-    <span id="last-updated"></span>
+    Track record (50%) · FAA delays (15%) · Hub weather (15%) · News (20%)<br>
+    No ads. No affiliates. <span id="last-updated"></span>
   </footer>
 
   <script>
@@ -457,76 +347,34 @@
       'Counting lost bags...',
       'Scanning hub delays...',
       'Crunching the numbers...',
-      'Checking complaint records...',
       'Looking at the forecast...',
     ];
 
-    const diceEl      = document.getElementById('dice');
-    const btn         = document.getElementById('roll-btn');
-    const statusEl    = document.getElementById('status');
-    const summaryEl   = document.getElementById('summary');
-    const resultsEl   = document.getElementById('results');
-    const heroEl      = document.getElementById('hero');
-    const loadingEl   = document.getElementById('loading');
-    const phraseEl    = document.getElementById('loading-phrase');
+    const diceEl    = document.getElementById('dice');
+    const btn       = document.getElementById('roll-btn');
+    const statusEl  = document.getElementById('status');
+    const summaryEl = document.getElementById('summary');
+    const resultsEl = document.getElementById('results');
+    const heroEl    = document.getElementById('hero');
+    const loadingEl = document.getElementById('loading');
+    const phraseEl  = document.getElementById('loading-phrase');
 
-    // ── Helpers ──────────────────────────────────────────────────────
     function cls(v) {
       if (v == null) return 'null';
       return v >= 70 ? 'good' : v >= 52 ? 'ok' : 'bad';
     }
     function rankCls(r) { return r <= 2 ? 'good' : r <= 5 ? 'ok' : 'bad'; }
 
-    // ── Radar SVG ────────────────────────────────────────────────────
-    // 4-axis diamond: top=BTS, right=FAA, bottom=Weather, left=News
-    function radarSvg(bts, faa, weather, news, overallScore) {
-      const cx = 32, cy = 32, r = 26;
-      const axes = [-90, 0, 90, 180]; // degrees: top, right, bottom, left
-      const scores = [bts ?? 50, faa ?? 50, weather ?? 50, news ?? 50];
-
-      function toXY(s, deg) {
-        const v = Math.max(0, Math.min(100, s)) / 100;
-        const rad = deg * Math.PI / 180;
-        return [(cx + r * v * Math.cos(rad)).toFixed(1), (cy + r * v * Math.sin(rad)).toFixed(1)];
-      }
-
-      const pts = scores.map((s, i) => toXY(s, axes[i]));
-      const poly = pts.map(p => p.join(',')).join(' ');
-
-      const grid = [0.25, 0.5, 0.75, 1].map(f => {
-        const gr = r * f;
-        const gp = axes.map(deg => {
-          const rad = deg * Math.PI / 180;
-          return `${(cx + gr * Math.cos(rad)).toFixed(1)},${(cy + gr * Math.sin(rad)).toFixed(1)}`;
-        }).join(' ');
-        return `<polygon points="${gp}" fill="none" stroke="#232328" stroke-width="0.6"/>`;
-      }).join('');
-
-      const axisLines = axes.map(deg => {
-        const rad = deg * Math.PI / 180;
-        return `<line x1="${cx}" y1="${cy}" x2="${(cx + r * Math.cos(rad)).toFixed(1)}" y2="${(cy + r * Math.sin(rad)).toFixed(1)}" stroke="#232328" stroke-width="0.6"/>`;
-      }).join('');
-
-      const sc = overallScore ?? 0;
-      const fill   = sc >= 70 ? 'rgba(34,197,94,0.2)'  : sc >= 52 ? 'rgba(234,179,8,0.2)'  : 'rgba(239,68,68,0.2)';
-      const stroke = sc >= 70 ? '#22c55e'               : sc >= 52 ? '#eab308'               : '#ef4444';
-
-      const dots = pts.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="${stroke}"/>`).join('');
-
-      return `<svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">${grid}${axisLines}<polygon points="${poly}" fill="${fill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round"/>${dots}</svg>`;
-    }
-
     // ── Summary bar chart ─────────────────────────────────────────────
     function renderSummary(airlines) {
-      summaryEl.innerHTML = `<div class="summary-title">All 8 carriers · ranked by reliability score</div>`;
+      summaryEl.innerHTML = '';
       airlines.forEach((a, i) => {
         const c = cls(a.score);
-        const rc = rankCls(a.rank);
         const row = document.createElement('div');
         row.className = 'summary-row';
         row.style.animationDelay = `${i * 40}ms`;
         row.innerHTML = `
-          <div class="sum-rank ${rc}">${a.rank}</div>
+          <div class="sum-rank ${rankCls(a.rank)}">${a.rank}</div>
           <div class="sum-name">${a.name}</div>
           <div class="sum-bar-bg">
             <div class="sum-bar-fill ${c}" data-w="${a.score ?? 0}"></div>
@@ -542,46 +390,25 @@
       }));
     }
 
-    // ── Stat pills ────────────────────────────────────────────────────
-    function statPills(raw) {
-      if (!raw) return '<span class="stat-pill">No historical data</span>';
-      const out = [];
-      if (raw.avgOnTimePct != null) {
-        const v = Math.round(raw.avgOnTimePct * 10) / 10;
-        const c = v >= 82 ? 'hi' : v >= 76 ? 'mid' : v >= 68 ? 'lo' : 'bad';
-        out.push(`<span class="stat-pill ${c}"><strong>${v}%</strong> on-time</span>`);
-      }
-      if (raw.avgCancelPct != null) {
-        const v = Math.round(raw.avgCancelPct * 10) / 10;
-        const c = v <= 1.2 ? 'hi' : v <= 2 ? 'mid' : v <= 3 ? 'lo' : 'bad';
-        out.push(`<span class="stat-pill ${c}"><strong>${v}%</strong> cancelled</span>`);
-      }
-      if (raw.baggagePer100 != null) {
-        const v = raw.baggagePer100;
-        const c = v <= 1.5 ? 'hi' : v <= 3 ? 'mid' : 'lo';
-        out.push(`<span class="stat-pill ${c}"><strong>${v}</strong> bags/100</span>`);
-      }
-      if (raw.complaintsPer100k != null) {
-        const v = raw.complaintsPer100k;
-        const c = v <= 4 ? 'hi' : v <= 10 ? 'mid' : 'lo';
-        out.push(`<span class="stat-pill ${c}"><strong>${v}</strong> complaints/100k</span>`);
-      }
-      return out.join(' ');
-    }
-
-    // ── Signal cell ───────────────────────────────────────────────────
-    function sigCell(label, sig) {
-      const s = sig?.score;
-      const c = cls(s);
-      return `
-        <div class="sig-cell">
-          <div class="sig-label">${label}</div>
-          <div class="sig-bar-row">
-            <div class="sig-bar-bg"><div class="sig-bar-fill ${c}" style="width:${s ?? 0}%"></div></div>
-            <div class="sig-val ${c}">${s ?? '—'}</div>
-          </div>
-          <div class="sig-detail">${sig?.detail ?? 'No data'}</div>
+    // ── Weighted signal bars ──────────────────────────────────────────
+    // Width = signal weight. Height of fill = signal score (0–100% of bar height).
+    // Empty space above each column shows how far from perfect — context built in.
+    function signalBars(bts, faa, weather, news) {
+      const signals = [
+        { key: 'bts',     label: 'Track record', sig: bts },
+        { key: 'faa',     label: 'FAA',          sig: faa },
+        { key: 'weather', label: 'Weather',       sig: weather },
+        { key: 'news',    label: 'News',          sig: news },
+      ];
+      return signals.map(({ key, label, sig }) => {
+        const s = sig?.score;
+        const c = cls(s);
+        const h = s != null ? s : null;
+        return `<div class="sbar ${key}" title="${label}: ${s ?? 'no data'}">
+          <div class="sbar-label">${label}</div>
+          <div class="sbar-fill ${c}" data-h="${h ?? 0}" style="height:0%"></div>
         </div>`;
+      }).join('');
     }
 
     // ── Airline card ──────────────────────────────────────────────────
@@ -590,12 +417,25 @@
       const sc = cls(a.score);
       const isWinner = a.rank === 1;
       const delta = a.signals.bts?.raw?.trendDelta;
+      const raw = a.signals.bts?.raw;
 
       let badge = '';
       if (delta != null) {
         if (delta > 1.5)       badge = `<span class="trend-badge up">↑ improving</span>`;
         else if (delta < -1.5) badge = `<span class="trend-badge down">↓ declining</span>`;
         else                   badge = `<span class="trend-badge flat">→ stable</span>`;
+      }
+
+      let stats = '';
+      if (raw) {
+        const ot = raw.avgOnTimePct != null ? Math.round(raw.avgOnTimePct * 10) / 10 : null;
+        const ca = raw.avgCancelPct != null ? Math.round(raw.avgCancelPct * 10) / 10 : null;
+        const otCls = ot == null ? '' : ot >= 82 ? 'hi' : ot >= 68 ? '' : 'lo bad';
+        const caCls = ca == null ? '' : ca <= 1.2 ? 'hi' : ca <= 2 ? '' : 'bad';
+        const parts = [];
+        if (ot != null) parts.push(`<strong class="${otCls}">${ot}%</strong> on-time`);
+        if (ca != null) parts.push(`<strong class="${caCls}">${ca}%</strong> cancelled`);
+        if (parts.length) stats = `<div class="key-stats">${parts.join(' &nbsp;·&nbsp; ')}</div>`;
       }
 
       const card = document.createElement('div');
@@ -610,22 +450,14 @@
           </div>
           <div class="airline-info">
             <div class="airline-name">
-              ${a.name}
-              <span class="iata">${a.iata}</span>
-              ${badge}
+              ${a.name} <span class="iata">${a.iata}</span> ${badge}
             </div>
-            <div class="stat-pills">${statPills(a.signals.bts?.raw)}</div>
+            ${stats}
           </div>
-          <div class="score-right">
-            ${radarSvg(a.signals.bts?.score, a.signals.faa?.score, a.signals.weather?.score, a.signals.news?.score, a.score)}
-            <div class="card-score ${sc}">${a.score ?? '—'}</div>
-          </div>
+          <div class="card-score ${sc}">${a.score ?? '—'}</div>
         </div>
-        <div class="signal-grid">
-          ${sigCell('Track record', a.signals.bts)}
-          ${sigCell('Right now', a.signals.faa)}
-          ${sigCell('This week', a.signals.weather)}
-          ${sigCell('In the news', a.signals.news)}
+        <div class="signal-bars">
+          ${signalBars(a.signals.bts, a.signals.faa, a.signals.weather, a.signals.news)}
         </div>`;
 
       return card;
@@ -640,7 +472,6 @@
       void diceEl.offsetWidth;
       diceEl.classList.add('rolling');
 
-      // Cycle loading phrases
       let phraseIdx = 0;
       phraseEl.textContent = LOADING_PHRASES[phraseIdx];
       loadingEl.classList.add('visible');
@@ -685,7 +516,6 @@
       diceEl.innerHTML = DICE_FACES[Math.floor(Math.random() * DICE_FACES.length)];
 
       heroEl.classList.add('settled');
-      summaryEl.innerHTML = '';
       summaryEl.classList.remove('visible');
       resultsEl.innerHTML = '';
 
@@ -693,9 +523,16 @@
       data.airlines.forEach((a, i) => resultsEl.appendChild(renderCard(a, i)));
       resultsEl.classList.add('visible');
 
+      // Animate signal bar fills after paint
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        resultsEl.querySelectorAll('.sbar-fill').forEach(el => {
+          el.style.height = `${el.dataset.h}%`;
+        });
+      }));
+
       if (data.lastFetched) {
         document.getElementById('last-updated').textContent =
-          `Signals refreshed: ${new Date(data.lastFetched).toLocaleString()}.`;
+          `Updated ${new Date(data.lastFetched).toLocaleTimeString()}.`;
       }
 
       btn.disabled = false;
