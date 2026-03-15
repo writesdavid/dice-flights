@@ -1,5 +1,7 @@
 # Dice Flights
 
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Roll the dice. See which US airline is actually delivering right now.
 
 Not safe — reliable. On time. Getting you where you're going when they said they would.
