@@ -34,11 +34,6 @@
       "complaintsPer100k": 4.2,
       "carrierCancelPct": 1.2
     },
-    "NK": {
-      "baggagePer100": 5.8,
-      "complaintsPer100k": 14.8,
-      "carrierCancelPct": 2.5
-    },
     "F9": {
       "baggagePer100": 5.0,
       "complaintsPer100k": 9.5,
@@ -134,21 +129,6 @@
         { "year": 2024, "month": 8,  "onTimePct": 73.8, "cancelPct": 2.3 },
         { "year": 2024, "month": 9,  "onTimePct": 75.4, "cancelPct": 2.1 },
         { "year": 2024, "month": 10, "onTimePct": 74.9, "cancelPct": 2.2 }
-      ]
-    },
-    "NK": {
-      "name": "Spirit",
-      "monthly": [
-        { "year": 2024, "month": 1,  "onTimePct": 66.8, "cancelPct": 3.8 },
-        { "year": 2024, "month": 2,  "onTimePct": 68.2, "cancelPct": 3.5 },
-        { "year": 2024, "month": 3,  "onTimePct": 67.5, "cancelPct": 3.9 },
-        { "year": 2024, "month": 4,  "onTimePct": 65.4, "cancelPct": 4.2 },
-        { "year": 2024, "month": 5,  "onTimePct": 68.1, "cancelPct": 3.7 },
-        { "year": 2024, "month": 6,  "onTimePct": 63.2, "cancelPct": 4.6 },
-        { "year": 2024, "month": 7,  "onTimePct": 66.8, "cancelPct": 4.0 },
-        { "year": 2024, "month": 8,  "onTimePct": 67.4, "cancelPct": 3.9 },
-        { "year": 2024, "month": 9,  "onTimePct": 70.2, "cancelPct": 3.4 },
-        { "year": 2024, "month": 10, "onTimePct": 69.8, "cancelPct": 3.6 }
       ]
     },
     "F9": {

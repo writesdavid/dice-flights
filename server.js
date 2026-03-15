@@ -18,7 +18,7 @@ const AIRLINES = [
   { name: 'Southwest', iata: 'WN' },
   { name: 'Alaska',    iata: 'AS' },
   { name: 'JetBlue',   iata: 'B6' },
-  { name: 'Spirit',    iata: 'NK' },
+  { name: 'Allegiant', iata: 'G4' },
   { name: 'Frontier',  iata: 'F9' },
 ];
 

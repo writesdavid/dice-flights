@@ -8,7 +8,7 @@ const HUB_COORDS = {
   WN: { hub: 'MDW', lat: 41.7868, lon: -87.7522, tz: 'America/Chicago' },
   AS: { hub: 'SEA', lat: 47.4502, lon: -122.3088, tz: 'America/Los_Angeles' },
   B6: { hub: 'JFK', lat: 40.6413, lon: -73.7781, tz: 'America/New_York' },
-  NK: { hub: 'FLL', lat: 26.0726, lon: -80.1527, tz: 'America/New_York' },
+  G4: { hub: 'LAS', lat: 36.0840, lon: -115.1537, tz: 'America/Los_Angeles' },
   F9: { hub: 'DEN', lat: 39.8561, lon: -104.6737, tz: 'America/Denver' },
 };
 

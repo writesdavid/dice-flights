@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const PRIMARY_HUBS = {
   DL: 'ATL', UA: 'ORD', AA: 'DFW',
   WN: 'MDW', AS: 'SEA', B6: 'JFK',
-  NK: 'FLL', F9: 'DEN',
+  G4: 'LAS', F9: 'DEN',
 };
 
 // All hubs per airline for broader signal
@@ -15,7 +15,7 @@ const ALL_HUBS = {
   WN: ['MDW', 'DAL', 'BWI', 'LAS', 'PHX'],
   AS: ['SEA', 'PDX', 'SFO', 'LAX'],
   B6: ['JFK', 'BOS', 'FLL', 'LGB'],
-  NK: ['FLL', 'ATL', 'MCO', 'ORD'],
+  G4: ['LAS', 'PIE', 'AZA', 'OAK'],
   F9: ['DEN', 'ORD', 'ATL', 'MCO'],
 };
 
