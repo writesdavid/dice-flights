@@ -35,10 +35,10 @@
       display: inline-block;
       line-height: 1;
       transition: filter 0.15s;
-      filter: drop-shadow(0 0 8px rgba(77,159,255,0.15));
+      filter: drop-shadow(0 2px 6px rgba(158,73,41,0.15));
     }
     #dice:hover {
-      filter: drop-shadow(0 0 18px rgba(77,159,255,0.55));
+      filter: drop-shadow(0 4px 16px rgba(158,73,41,0.35));
     }
     #dice.rolling {
       animation: roll 1.2s ease-out forwards;
@@ -55,23 +55,20 @@
     /* ── Roll button ────────────────────────────────────────────────── */
     #roll-btn {
       margin-top: 1.25rem;
-      background: var(--signal);
+      background: var(--accent);
       color: #fff;
       border: none;
       padding: 0.9rem 3.5rem;
       font-size: 1.05rem;
-      font-weight: 800;
-      border-radius: 6px;
+      font-weight: 700;
       cursor: pointer;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      transition: background 0.15s, transform 0.1s, box-shadow 0.2s;
-      box-shadow: 0 0 0 rgba(77,159,255,0);
-      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      transition: background 0.15s, transform 0.1s;
+      font-family: var(--font-body);
+      min-height: 44px;
     }
     #roll-btn:hover {
-      background: #3a8fe8;
-      box-shadow: 0 0 28px rgba(77,159,255,0.35);
+      background: #8a3d21;
     }
     #roll-btn:active  { transform: scale(0.97); }
     #roll-btn:disabled {
@@ -95,7 +92,7 @@
       color: var(--muted);
       min-height: 1.3em;
       animation: phraseFade 0.4s ease;
-      font-family: var(--mono);
+      font-family: var(--font-mono);
     }
     @keyframes phraseFade {
       from { opacity: 0; transform: translateY(4px); }
@@ -136,7 +133,7 @@
       text-align: right;
       flex-shrink: 0;
       color: var(--muted);
-      font-family: var(--mono);
+      font-family: var(--font-mono);
     }
     .sum-rank.good { color: var(--ok); }
     .sum-rank.ok   { color: var(--warn); }
@@ -153,7 +150,7 @@
     .sum-bar-bg {
       flex: 1;
       height: 5px;
-      background: rgba(255,255,255,0.06);
+      background: var(--border);
       border-radius: 3px;
       overflow: hidden;
     }
@@ -163,9 +160,9 @@
       width: 0;
       transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .sum-bar-fill.good { background: var(--ok); }
-    .sum-bar-fill.ok   { background: var(--warn); }
-    .sum-bar-fill.bad  { background: var(--danger); }
+    .sum-bar-fill.good { background: var(--ok); border-radius: 3px; }
+    .sum-bar-fill.ok   { background: var(--warn); border-radius: 3px; }
+    .sum-bar-fill.bad  { background: var(--danger); border-radius: 3px; }
 
     .sum-score {
       font-size: 0.72rem;
@@ -173,7 +170,7 @@
       width: 1.9rem;
       text-align: right;
       flex-shrink: 0;
-      font-family: var(--mono);
+      font-family: var(--font-mono);
     }
     .sum-score.good { color: var(--ok); }
     .sum-score.ok   { color: var(--warn); }
@@ -209,17 +206,16 @@
 
     /* ── Airline card ───────────────────────────────────────────────── */
     .airline-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      background: white;
+      border: 1.5px solid var(--border);
       overflow: hidden;
       opacity: 0;
       transform: translateY(8px);
       animation: fadeUp 0.35s ease forwards;
     }
     .airline-card.winner {
-      border-color: rgba(77,159,255,0.35);
-      box-shadow: 0 0 22px rgba(77,159,255,0.06);
+      border-color: var(--accent);
+      box-shadow: 0 2px 12px rgba(158,73,41,0.08);
     }
     @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
@@ -241,7 +237,7 @@
       font-size: 1.55rem;
       font-weight: 800;
       line-height: 1;
-      font-family: var(--mono);
+      font-family: var(--font-mono);
     }
     .rank-num.good { color: var(--ok); }
     .rank-num.ok   { color: var(--warn); }
@@ -249,10 +245,10 @@
     .winner-label {
       font-size: 0.55rem;
       font-weight: 700;
-      color: var(--signal);
+      color: var(--accent);
       letter-spacing: 0.06em;
       margin-top: 0.12rem;
-      font-family: var(--mono);
+      font-family: var(--font-mono);
       text-transform: uppercase;
     }
 
@@ -269,10 +265,9 @@
       font-size: 0.7rem;
       font-weight: 500;
       color: var(--muted);
-      background: rgba(255,255,255,0.04);
+      background: var(--bg-card);
       padding: 0.1rem 0.3rem;
-      border-radius: 3px;
-      font-family: var(--mono);
+      font-family: var(--font-mono);
       border: 1px solid var(--border);
     }
     .trend-badge {
@@ -298,7 +293,7 @@
       letter-spacing: -0.04em;
       line-height: 1;
       flex-shrink: 0;
-      font-family: var(--mono);
+      font-family: var(--font-mono);
     }
     .card-score.good { color: var(--ok); }
     .card-score.ok   { color: var(--warn); }
@@ -336,10 +331,10 @@
       height: 0;
       transition: height 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .sbar-fill.good { background: rgba(74,222,128,0.45); }
-    .sbar-fill.ok   { background: rgba(255,184,77,0.45); }
-    .sbar-fill.bad  { background: rgba(255,90,90,0.4); }
-    .sbar-fill.null { background: rgba(255,255,255,0.04); height: 10% !important; }
+    .sbar-fill.good { background: rgba(61,107,79,0.5); }
+    .sbar-fill.ok   { background: rgba(138,96,16,0.5); }
+    .sbar-fill.bad  { background: rgba(154,46,46,0.45); }
+    .sbar-fill.null { background: var(--border); height: 10% !important; }
 
     .sbar-label {
       position: absolute;
@@ -350,11 +345,11 @@
       font-size: 0.56rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: rgba(255,255,255,0.35);
+      color: var(--dim);
       pointer-events: none;
       white-space: nowrap;
       overflow: hidden;
-      font-family: var(--mono);
+      font-family: var(--font-mono);
     }
 
     /* ── Mobile ─────────────────────────────────────────────────────── */
@@ -369,8 +364,6 @@
   </style>
 </head>
 <body>
-
-  <div class="op-scan"></div>
 
   <div class="op-page">
 
